@@ -1,0 +1,40 @@
+init:	# Initialization	
+	# Set up stack pointer
+	irmovq Stack, %rsp
+	# Execute main program
+	call Main
+	# Terminate
+	halt
+
+	.align 8 	# Program data	
+array:
+	.quad 0x000d000d000d000d
+	.quad 0x00c000c000c000c0
+	.quad 0x0b000b000b000b00
+	.quad 0xa000a000a000a000
+	.quad 0
+
+Main:	# Main function
+	irmovq array,%rdi
+	# call len(array)
+	call suma
+	ret
+
+suma:	# suma function
+	irmovq $1, %r8          # Constant 1
+	irmovq $8, %r9          # Constant 8
+	irmovq $0, %rax         # suma = 0
+	mrmovq (%rdi), %rdx     # val = *a
+	andq %rdx, %rdx         # Test val
+	je Done                 # If zero, goto Done
+Loop:
+	addq %rdx, %rax          # suma += val
+	addq %r9, %rdi          # a++
+	mrmovq (%rdi), %rdx     # val = *a
+	andq %rdx, %rdx         # Test val
+	jne Loop                # If !0, goto Loop
+Done:
+	ret
+
+	.pos 0x100	# Placement of stack
+Stack:
